@@ -30,4 +30,14 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
+
+
+    public Product(String name, String brand, String description, BigDecimal price, int inventory, Category category) {
+        this.name = name;
+        this.brand = brand;
+        this.description = description;
+        this.price = price;
+        this.inventory = inventory;
+        this.category = category;
+    }
 }
