@@ -1,5 +1,6 @@
 package com.example.dreamshops.service.category;
 
+import com.example.dreamshops.exceptions.AlreadyExistsException;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.Category;
 import com.example.dreamshops.repository.CategoryRepo;
@@ -34,10 +35,12 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public Category addCategory(CategoryRequest request) {
-        Category category = new Category();
-        category.setName(request.getName());
-        return categoryRepo.save(category);
+        Category category = new Category(request.getName());
+        return Optional.of(category).filter(c -> !categoryRepo.existsByName(c.getName()))
+                .map(categoryRepo::save)
+                .orElseThrow(() -> new AlreadyExistsException("Category with name: " + category.getName() + " already exists"));
     }
+
 
     @Override
     public Category updateCategory(CategoryRequest request, Long id) {
