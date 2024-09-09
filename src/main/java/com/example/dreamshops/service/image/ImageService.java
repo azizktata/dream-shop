@@ -47,12 +47,14 @@ public class ImageService implements IImageService{
             try {
                 Image image = new Image();
                 image.setFileName(file.getOriginalFilename());
+                image.setFileType(file.getContentType());
                 image.setImage(new SerialBlob(file.getBytes()));
                 image.setProduct(product);
 
-                imageRepo.save(image);
-                String downloadUrl = "/api/v1/images/download/" + image.getId();
-                image.setDownloadUrl(downloadUrl);
+                Image savedImage = imageRepo.save(image);
+                String downloadUrl = "/api/v1/images/download/" + savedImage.getId();
+                savedImage.setDownloadUrl(downloadUrl);
+                imageRepo.save(savedImage);
                 imageDtos.add(ImageDto.toDto(image));
 
             } catch (IOException | SQLException e) {
@@ -73,5 +75,11 @@ public class ImageService implements IImageService{
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public List<ImageDto> getAllImages() {
+        List<ImageDto> imageDtos = new ArrayList<>();
+        imageRepo.findAll().forEach(image -> imageDtos.add(ImageDto.toDto(image)));
+        return imageDtos;
     }
 }

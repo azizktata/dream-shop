@@ -16,9 +16,11 @@ public class ApiExceptionHandler {
         return new ApiErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), e.getClass().getName());
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({AlreadyExistsException.class, SQLException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler({AlreadyExistsException.class})
     public ApiErrorResponse handleAlreadyExists(Exception e) {
-        return new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getClass().getName());
+        return new ApiErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), e.getClass().getName());
     }
+
+
 }

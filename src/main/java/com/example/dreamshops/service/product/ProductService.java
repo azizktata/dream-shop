@@ -84,37 +84,37 @@ public class ProductService implements IProductService{
 
     @Override
     public List<ProductDto> getAllProducts() {
-        return productRepository.findAll().stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findAll().stream().map(ProductDto::toDto).toList()).orElseThrow(() -> new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByCategory(String category) {
-        return productRepository.findByCategoryName(category).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByCategoryName(category).stream().map(ProductDto::toDto).toList()).orElseThrow(() -> new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByBrand(brand).stream().map(ProductDto::toDto).toList()).orElseThrow(()-> new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByPriceRange(BigDecimal min, BigDecimal max) {
-        return productRepository.findByPriceBetween(min, max).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByPriceBetween(min, max).stream().map(ProductDto::toDto).toList()).orElseThrow(()->    new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByCategoryAndBrand(String brand, String category) {
-        return productRepository.findByCategoryNameAndBrand(category, brand).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByCategoryNameAndBrand(category, brand).stream().map(ProductDto::toDto).toList()).orElseThrow(()-> new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByBrandAndName(brand, name).stream().map(ProductDto::toDto).toList()).orElseThrow(()-> new EntityNotFoundException("Products not found"));
     }
 
     @Override
     public List<ProductDto> getProductsByName(String name) {
-        return productRepository.findByName(name).stream().map(ProductDto::toDto).toList();
+        return Optional.ofNullable(productRepository.findByName(name).stream().map(ProductDto::toDto).toList()).orElseThrow(()-> new EntityNotFoundException("Products not found"));
     }
 
     @Override

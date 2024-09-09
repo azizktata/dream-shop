@@ -22,6 +22,11 @@ public class ImageController {
         this.imageService = imageService;
     }
 
+    @GetMapping
+    public List<ImageDto> getAllImages(){
+        return imageService.getAllImages();
+    }
+
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadImage(@PathVariable Long id) throws SQLException {
         Image image = imageService.getImageById(id);
