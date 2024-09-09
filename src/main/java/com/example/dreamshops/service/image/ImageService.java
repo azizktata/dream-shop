@@ -63,12 +63,13 @@ public class ImageService implements IImageService{
     }
 
     @Override
-    public void updateImage(MultipartFile file, Long imageId) {
+    public ImageDto updateImage(MultipartFile file, Long imageId) {
         Image image = getImageById(imageId);
         try {
             image.setFileName(file.getOriginalFilename());
             image.setImage(new SerialBlob(file.getBytes()));
-            imageRepo.save(image);
+            Image savedImage = imageRepo.save(image);
+            return ImageDto.toDto(savedImage);
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e.getMessage());
         }

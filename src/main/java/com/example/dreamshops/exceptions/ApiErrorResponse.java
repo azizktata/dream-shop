@@ -13,9 +13,11 @@ import java.io.Serializable;
 public class ApiErrorResponse implements Serializable {
     private int status;
     private String message;
+    private String exception;
 
-    public ApiErrorResponse(int status, String message) {
+    public ApiErrorResponse(int status, String message, String exception) {
         this.status = status;
         this.message = message;
+        this.exception = exception;
     }
 }

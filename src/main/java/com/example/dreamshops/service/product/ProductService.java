@@ -1,5 +1,6 @@
 package com.example.dreamshops.service.product;
 
+import com.example.dreamshops.dto.ProductDto;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.Category;
 import com.example.dreamshops.model.Product;
@@ -23,7 +24,7 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product addProduct(ProductRequest request) {
+    public ProductDto addProduct(ProductRequest request) {
         Category category = Optional.ofNullable(categoryRepo.findByName(request.getCategoryName()))
                 .orElseGet(() -> {
                     Category newCategory = new Category();
@@ -32,7 +33,7 @@ public class ProductService implements IProductService{
                 });
         Product product = create(request, category);
 
-        return productRepository.save(product);
+        return ProductDto.toDto(productRepository.save(product));
     }
 
     private Product create(ProductRequest request, Category category){
@@ -47,10 +48,11 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Product updateProduct(ProductRequest request, Long productId) {
+    public ProductDto updateProduct(ProductRequest request, Long productId) {
         return productRepository.findById(productId)
                 .map(existingProduct -> prepareUpdate(request, existingProduct))
                 .map(productRepository::save)
+                .map(ProductDto::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
     }
@@ -81,38 +83,38 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll().stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategoryName(category);
+    public List<ProductDto> getProductsByCategory(String category) {
+        return productRepository.findByCategoryName(category).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand);
+    public List<ProductDto> getProductsByBrand(String brand) {
+        return productRepository.findByBrand(brand).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByPriceRange(BigDecimal min, BigDecimal max) {
-        return productRepository.findByPriceBetween(min, max);
+    public List<ProductDto> getProductsByPriceRange(BigDecimal min, BigDecimal max) {
+        return productRepository.findByPriceBetween(min, max).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByCategoryAndBrand(String brand, String category) {
-        return productRepository.findByCategoryNameAndBrand(category, brand);
+    public List<ProductDto> getProductsByCategoryAndBrand(String brand, String category) {
+        return productRepository.findByCategoryNameAndBrand(category, brand).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name);
+    public List<ProductDto> getProductsByBrandAndName(String brand, String name) {
+        return productRepository.findByBrandAndName(brand, name).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByName(String name) {
-        return productRepository.findByName(name);
+    public List<ProductDto> getProductsByName(String name) {
+        return productRepository.findByName(name).stream().map(ProductDto::toDto).toList();
     }
 
     @Override
