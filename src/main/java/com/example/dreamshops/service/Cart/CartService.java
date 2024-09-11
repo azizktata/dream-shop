@@ -1,5 +1,6 @@
 package com.example.dreamshops.service.Cart;
 
+import com.example.dreamshops.dto.CartDto;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.Cart;
 import com.example.dreamshops.repository.CartRepo;
@@ -17,13 +18,13 @@ public class CartService implements ICartService{
 
     @Override
     public void clearCart(Long id) {
-        Cart cart = getCart(id);
+        Cart cart = cartRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + id + " not found"));
         cartRepo.delete(cart);
     }
 
     @Override
-    public Cart getCart(Long id) {
-        return cartRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + id + " not found"));
+    public CartDto getCart(Long id) {
+        return CartDto.toDto(cartRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + id + " not found")));
     }
 
 

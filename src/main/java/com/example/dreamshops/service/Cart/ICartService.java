@@ -1,8 +1,8 @@
 package com.example.dreamshops.service.Cart;
 
-import com.example.dreamshops.model.Cart;
+import com.example.dreamshops.dto.CartDto;
 
 public interface ICartService {
     void clearCart(Long id);
-    Cart getCart(Long id);
+    CartDto getCart(Long id);
 }

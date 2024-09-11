@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class Cart {
     private BigDecimal total;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> cartItems;
+    private Set<CartItem> cartItems = new HashSet<>();
 
     public void setTotal() {
         this.total = this.cartItems.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
