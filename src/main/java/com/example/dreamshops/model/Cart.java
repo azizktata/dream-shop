@@ -24,7 +24,23 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public void addCartItem(CartItem cartItem) {
+        this.getCartItems().add(cartItem);
+        cartItem.setCart(this);
+        this.setTotal();
+    }
+
     public void setTotal() {
         this.total = this.cartItems.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void removeCartItem(CartItem cartItem) {
+        this.getCartItems().remove(cartItem);
+        cartItem.setCart(null);
+        this.setTotal();
     }
 }
