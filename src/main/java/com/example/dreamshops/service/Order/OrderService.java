@@ -4,25 +4,31 @@ import com.example.dreamshops.dto.OrderDto;
 import com.example.dreamshops.enums.OrderStatus;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.*;
-import com.example.dreamshops.repository.*;
+import com.example.dreamshops.repository.OrderItemRepo;
+import com.example.dreamshops.repository.OrderRepo;
+import com.example.dreamshops.repository.ProductRepo;
+import com.example.dreamshops.service.Cart.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class OrderService implements IOrderService{
     private final OrderRepo orderRepo;
-    private final CartRepo cartRepo;
+    private final CartService cartService;
     private final OrderItemRepo orderItemRepo;
     private final ProductRepo productRepo;
 
     @Override
     public OrderDto placeOrder(Long userId) {
-        Cart cart = Optional.ofNullable(cartRepo.findByUserId(userId)).orElseThrow(() -> new EntityNotFoundException("Cart for user with id: " + userId + " not found"));
+        Cart cart = cartService.getCartByUserId(userId);
         Order order = new Order();
-        order.setCreatedDate(new Date());
+        order.setCreatedDate(LocalDate.now());
         order.setStatus(OrderStatus.PENDING);
         order.setUser(cart.getUser());
 
@@ -37,12 +43,15 @@ public class OrderService implements IOrderService{
             productRepo.save(product);
 
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getUnitPrice());
+            orderItem.setPrice(cartItem.getTotalPrice());
+            orderItem.setOrder(order);
             orderItems.add(orderItem);
         });
 
         order.setOrderItems(orderItems);
         order.updateTotalAmount();
+
+        cartService.clearCart(cart.getId());
         return OrderDto.toDto(orderRepo.save(order));
     }
 
@@ -57,6 +66,11 @@ public class OrderService implements IOrderService{
     @Override
     public List<OrderDto> getOrdersByUserId(Long userId) {
         return orderRepo.findByUserId(userId).stream().map(OrderDto::toDto).toList();
+    }
+
+    @Override
+    public List<OrderDto> getOrders() {
+        return orderRepo.findAll().stream().map(OrderDto::toDto).toList();
     }
 
     @Override

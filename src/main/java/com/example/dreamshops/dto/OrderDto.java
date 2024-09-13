@@ -5,6 +5,7 @@ import com.example.dreamshops.model.Order;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public class OrderDto {
     private Long id;
     private Long userId;
-    private Date createdDate;
+    private LocalDate createdDate;
     private BigDecimal totalAmount;
     private OrderStatus status;
     private List<OrderItemDto> orderItems;

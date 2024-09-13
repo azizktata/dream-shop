@@ -9,6 +9,7 @@ public interface IOrderService {
     OrderDto placeOrder(Long userId);
     OrderDto removeOrderItem(Long orderId, Long orderItemId);
     List<OrderDto> getOrdersByUserId(Long userId);
+    List<OrderDto> getOrders();
     OrderDto getOrderById(Long orderId);
     OrderDto updateOrderStatus(Long orderId, OrderStatus status);
     void deleteOrder(Long orderId);

@@ -43,4 +43,8 @@ public class Cart {
         cartItem.setCart(null);
         this.setTotal();
     }
+
+    public void clearCartItems() {
+        this.cartItems.clear();
+    }
 }

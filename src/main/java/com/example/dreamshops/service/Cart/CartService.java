@@ -15,6 +15,7 @@ import com.example.dreamshops.repository.UserRepo;
 import com.example.dreamshops.request.CartItemRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +39,15 @@ public class CartService implements ICartService{
         });
 
     }
+
+    public Cart getCartByUserId(Long userId) {
+        return Optional.ofNullable(cartRepo.findByUserId(userId)).orElseThrow(() -> new EntityNotFoundException("Cart for user with id: " + userId + " not found"));
+    }
+    @Transactional
     @Override
     public void clearCart(Long id) {
         Cart cart = cartRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + id + " not found"));
+        cart.clearCartItems();
         cartRepo.delete(cart);
     }
 

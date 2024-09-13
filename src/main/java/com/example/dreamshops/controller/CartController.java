@@ -23,22 +23,12 @@ public class CartController {
         return cartService.getCart(id);
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void clearCart(Long id) {
-        cartService.clearCart(id);
-    }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/cart-item")
     public List<CartItemDto> getCartItems(@PathVariable Long id) {
         return cartService.getCartItems(id);
     }
 
-    @DeleteMapping("/{id}/cart-item/{cartItemId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCartItem(@PathVariable Long id, @PathVariable Long cartItemId) {
-        cartService.removeCartItem(id, cartItemId);
-    }
 
     @PostMapping("/cart-item/user/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,5 +39,17 @@ public class CartController {
     @PutMapping("/cart-item/user/{userId}")
     public void updateCartItem(@RequestBody CartItemRequest request, @PathVariable Long userId) {
         cartService.updateCartItem(request, userId);
+    }
+
+    @DeleteMapping("/{id}/cart-item/{cartItemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCartItem(@PathVariable Long id, @PathVariable Long cartItemId) {
+        cartService.removeCartItem(id, cartItemId);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void clearCart(Long id) {
+        cartService.clearCart(id);
     }
 }
