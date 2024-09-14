@@ -1,5 +1,6 @@
 package com.example.dreamshops.model;
 
+import com.example.dreamshops.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class Product {
     private String description;
     private BigDecimal price;
     private int inventory;
+    private ProductStatus status;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
@@ -42,4 +44,17 @@ public class Product {
         this.inventory = inventory;
         this.category = category;
     }
+
+    public void setProductStatus(){
+        if (this.inventory > 0){
+            this.status = ProductStatus.AVAILABLE;
+        } else {
+            this.status = ProductStatus.OUT_OF_STOCK;
+        }
+    }
+
+    public void removeImages(){
+        this.images.clear();
+    }
+
 }

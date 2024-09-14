@@ -1,6 +1,7 @@
 package com.example.dreamshops.service.product;
 
 import com.example.dreamshops.dto.ProductDto;
+import com.example.dreamshops.exceptions.AlreadyExistsException;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.Category;
 import com.example.dreamshops.model.Product;
@@ -31,7 +32,12 @@ public class ProductService implements IProductService{
                     newCategory.setName(request.getCategoryName());
                     return categoryRepo.save(newCategory);
                 });
+        if (productRepository.existsByNameAndBrand(request.getName(), request.getBrand())) {
+            throw new AlreadyExistsException("Product " + request.getName() + " already exists");
+        }
+
         Product product = create(request, category);
+        product.setProductStatus();
 
         return ProductDto.toDto(productRepository.save(product));
     }
@@ -65,15 +71,15 @@ public class ProductService implements IProductService{
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setInventory(request.getInventory());
-
+        product.setProductStatus();
         return product;
     }
 
     @Override
     public void deleteProduct(Long id) {
-        productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
-            throw new EntityNotFoundException("Product not found");
-        });
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        product.removeImages();
+        productRepository.delete(product);
     }
 
 

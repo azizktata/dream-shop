@@ -12,7 +12,7 @@ public interface ICartService {
     CartDto getCart(Long id);
     CartDto removeCartItem(Long cartId, Long itemId);
     CartItemDto addCartItem(CartItemRequest request, Long userId);
-    CartItemDto updateCartItem(CartItemRequest request, Long userId);
+    CartItemDto updateCartItem(Integer quantity, Long cartItemId, Long userId);
 
     List<CartItemDto> getCartItems(Long cartId);
 }

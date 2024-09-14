@@ -35,10 +35,8 @@ public class Order {
     private List<OrderItem> orderItems;
 
 
-    public void removeOrderItem(OrderItem orderItem) {
-        orderItems.remove(orderItem);
-        orderItem.setOrder(null);
-        updateTotalAmount();
+    public void clearOrder(){
+        this.setOrderItems(null);
     }
 
 

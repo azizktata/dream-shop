@@ -40,6 +40,7 @@ public class OrderService implements IOrderService{
 
             Product product = cartItem.getProduct();
             product.setInventory(product.getInventory() - cartItem.getQuantity());
+            product.setProductStatus();
             productRepo.save(product);
 
             orderItem.setQuantity(cartItem.getQuantity());
@@ -52,14 +53,6 @@ public class OrderService implements IOrderService{
         order.updateTotalAmount();
 
         cartService.clearCart(cart.getId());
-        return OrderDto.toDto(orderRepo.save(order));
-    }
-
-    @Override
-    public OrderDto removeOrderItem(Long orderId, Long orderItemId) {
-        Order order = orderRepo.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order with id: " + orderId + " not found"));
-        OrderItem orderItem = orderItemRepo.findById(orderItemId).orElseThrow(() -> new EntityNotFoundException("OrderItem with id: " + orderItemId + " not found"));
-        order.removeOrderItem(orderItem);
         return OrderDto.toDto(orderRepo.save(order));
     }
 
@@ -88,8 +81,8 @@ public class OrderService implements IOrderService{
 
     @Override
     public void deleteOrder(Long orderId) {
-        orderRepo.findById(orderId).ifPresentOrElse(orderRepo::delete, () -> {
-            throw new EntityNotFoundException("Order with id: " + orderId + " not found");
-        });
+        Order order = orderRepo.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order with id: " + orderId + " not found"));
+        order.clearOrder();
+        orderRepo.delete(order);
     }
 }

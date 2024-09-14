@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("${api.prefix}/orders")
 @AllArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -35,11 +35,6 @@ public class OrderController {
         return orderService.placeOrder(userId);
     }
 
-    @DeleteMapping("/{id}/order-item/{orderItemId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public OrderDto removeOrderItem(@PathVariable Long id, @PathVariable Long orderItemId) {
-        return orderService.removeOrderItem(id, orderItemId);
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

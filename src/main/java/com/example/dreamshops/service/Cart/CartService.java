@@ -48,7 +48,7 @@ public class CartService implements ICartService{
     public void clearCart(Long id) {
         Cart cart = cartRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + id + " not found"));
         cart.clearCartItems();
-        cartRepo.delete(cart);
+        cartRepo.save(cart);
     }
 
     @Override
@@ -57,8 +57,8 @@ public class CartService implements ICartService{
     }
 
     @Override
-    public CartDto removeCartItem(Long cartId, Long itemId) {
-        Cart cart = cartRepo.findById(cartId).orElseThrow(() -> new EntityNotFoundException("Cart with id: " + cartId + " not found"));
+    public CartDto removeCartItem(Long userId, Long itemId) {
+        Cart cart = cartRepo.findByUserId(userId);
         CartItem cartItem = cartItemRepo.findById(itemId).orElseThrow(() -> new EntityNotFoundException("CartItem with id: " + itemId + " not found"));
         cart.removeCartItem(cartItem);
         return CartDto.toDto(cartRepo.save(cart));
@@ -91,15 +91,21 @@ public class CartService implements ICartService{
     }
 
     @Override
-    public CartItemDto updateCartItem(CartItemRequest request, Long userId) {
-        Cart cart = Optional.ofNullable(cartRepo.findByUserId(userId)).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
-        cart.getCartItems().stream().filter(cartItem -> cartItem.getProduct().getId().equals(request.getProductId())).findFirst().ifPresent(cartItem -> {
-            cartItem.setQuantity(request.getQuantity());
-            cartItem.setTotalPrice();
-        });
+    public CartItemDto updateCartItem(Integer quantity, Long cartItemId, Long userId) {
+
+        Cart cart = cartRepo.findByUserId(userId);
+        cart.getCartItems().stream().filter(cartItem -> cartItem.getId().equals(cartItemId)).findFirst().ifPresentOrElse(cartItem -> {
+        if (cartItem.getQuantity() > cartItem.getProduct().getInventory()){
+            throw new IllegalArgumentException("Exceeded inventory limit");
+        }
+
+        cartItem.setQuantity(quantity);
+        cartItem.setTotalPrice();
+        },() -> new EntityNotFoundException("Cart item with id: " + cartItemId + " not found"));
+
         cart.setTotal();
 
-        return CartItemDto.toDto(cartRepo.save(cart).getCartItems().stream().filter(cartItem -> cartItem.getProduct().getId().equals(request.getProductId())).findFirst().orElseThrow(() -> new EntityNotFoundException("Cart item with product id: " + request.getProductId() + " not found")));
+        return CartItemDto.toDto(cartRepo.save(cart).getCartItems().stream().filter(cartItem -> cartItem.getId().equals(cartItemId)).findFirst().orElseThrow(() -> new EntityNotFoundException("Cart item " + cartItemId + " not found")));
     }
 
     @Override
@@ -109,4 +115,7 @@ public class CartService implements ICartService{
     }
 
 
+    public CartDto getCartByUser(Long id) {
+        return CartDto.toDto(cartRepo.findByUserId(id));
+    }
 }
