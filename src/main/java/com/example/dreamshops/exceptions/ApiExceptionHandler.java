@@ -20,5 +20,11 @@ public class ApiExceptionHandler {
         return new ApiErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), e.getClass().getName());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ApiErrorResponse handleIllegalArgumentException(Exception e) {
+        return new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getClass().getName());
+    }
+
 
 }

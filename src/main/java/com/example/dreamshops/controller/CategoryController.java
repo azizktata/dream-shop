@@ -5,12 +5,14 @@ import com.example.dreamshops.model.Category;
 import com.example.dreamshops.request.CategoryRequest;
 import com.example.dreamshops.service.category.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/categories")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -35,6 +37,7 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryDto addCategory(@RequestBody CategoryRequest category){
         return categoryService.addCategory(category);
     }
@@ -46,6 +49,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);
     }

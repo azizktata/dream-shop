@@ -5,12 +5,14 @@ import com.example.dreamshops.dto.CartItemDto;
 import com.example.dreamshops.request.CartItemRequest;
 import com.example.dreamshops.service.Cart.CartService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/carts")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class CartController {
     private final CartService cartService;
 

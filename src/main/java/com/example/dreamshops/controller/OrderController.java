@@ -4,12 +4,14 @@ import com.example.dreamshops.dto.OrderDto;
 import com.example.dreamshops.service.Order.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/orders")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 @AllArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -25,6 +27,7 @@ public class OrderController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<OrderDto> getOrders() {
         return orderService.getOrders();
     }

@@ -2,6 +2,7 @@ package com.example.dreamshops.service.Auth;
 
 import com.example.dreamshops.dto.AuthDto;
 import com.example.dreamshops.dto.UserDto;
+import com.example.dreamshops.enums.Role;
 import com.example.dreamshops.model.User;
 import com.example.dreamshops.repository.UserRepo;
 import com.example.dreamshops.request.LoginRequest;
@@ -34,20 +35,35 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setRegion(request.getRegion());
+        user.setCity(request.getCity());
+        user.setAddress(request.getAddress());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+        user.setRole(Role.USER);
         return UserDto.toDto(userRepo.save(user));
     }
 
     public AuthDto login(LoginRequest request) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(
-                        request.getEmail(), request.getPassword()));
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(
+                            request.getEmail(), request.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtUtils.generateToken(authentication);
-        User user = (User) authentication.getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtUtils.generateToken(authentication);
+            User user = (User) authentication.getPrincipal();
+            AuthDto authDto = AuthDto.userToAuthDto(user);
+            authDto.setToken(token);
+            return authDto;
 
-        return new AuthDto(user.getId(),token);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+
+
+
+
+
     }
 }

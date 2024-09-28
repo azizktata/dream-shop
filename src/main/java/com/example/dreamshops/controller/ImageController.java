@@ -7,6 +7,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/images")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class ImageController {
     private final ImageService imageService;
 
@@ -23,6 +25,7 @@ public class ImageController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ImageDto> getAllImages(){
         return imageService.getAllImages();
     }

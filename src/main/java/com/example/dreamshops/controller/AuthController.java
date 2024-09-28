@@ -2,7 +2,6 @@ package com.example.dreamshops.controller;
 
 import com.example.dreamshops.dto.AuthDto;
 import com.example.dreamshops.dto.UserDto;
-import com.example.dreamshops.model.User;
 import com.example.dreamshops.request.LoginRequest;
 import com.example.dreamshops.request.UserRequest;
 import com.example.dreamshops.service.Auth.AuthService;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("${api.prefix}/auth")
 @AllArgsConstructor
 public class AuthController {
     private final AuthService authService;

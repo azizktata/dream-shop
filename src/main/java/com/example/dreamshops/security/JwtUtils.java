@@ -1,5 +1,6 @@
 package com.example.dreamshops.security;
 
+import com.example.dreamshops.enums.Role;
 import com.example.dreamshops.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -7,11 +8,13 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -29,13 +32,10 @@ public class JwtUtils {
 
     public String generateToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        List<String> roles = user.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority).toList();
 
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("role", roles)
+                .claim("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -50,7 +50,7 @@ public class JwtUtils {
                 .getBody().getSubject();
     }
 
-    public  boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key())
@@ -66,11 +66,19 @@ public class JwtUtils {
 
 
     public List<GrantedAuthority> getRolesFromToken(String jwt) {
-        return Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
                 .parseClaimsJws(jwt)
-                .getBody()
-                .get("role", List.class);
+                .getBody();
+
+        // Extract roles as a List of Strings
+        @SuppressWarnings("unchecked")
+        List<String> roles = (List<String>) claims.get("role");
+
+        // Convert Strings to GrantedAuthority
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 }

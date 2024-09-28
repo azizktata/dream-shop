@@ -4,6 +4,7 @@ import com.example.dreamshops.dto.ProductDto;
 import com.example.dreamshops.request.ProductRequest;
 import com.example.dreamshops.service.product.ProductService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class ProductController {
     private final ProductService productService;
 
@@ -54,6 +56,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto addProduct(@RequestBody ProductRequest product){
         return productService.addProduct(product);
