@@ -41,6 +41,6 @@ public class Order {
 
 
     public void updateTotalAmount() {
-        this.totalAmount = this.orderItems.stream().map(OrderItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.totalAmount = this.orderItems.stream().map(OrderItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

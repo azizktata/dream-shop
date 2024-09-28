@@ -52,4 +52,8 @@ public class User implements UserDetails {
     public String getPassword() {
         return password;
     }
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+    }
 }

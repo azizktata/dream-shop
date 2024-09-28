@@ -45,7 +45,7 @@ public class Product {
         this.category = category;
     }
 
-    public void setProductStatus(){
+    public void setNewProductStatus(){
         if (this.inventory > 0){
             this.status = ProductStatus.AVAILABLE;
         } else {

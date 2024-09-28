@@ -1,6 +1,7 @@
 package com.example.dreamshops.controller;
 
 import com.example.dreamshops.dto.OrderDto;
+import com.example.dreamshops.request.OrderRequest;
 import com.example.dreamshops.service.Order.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,8 +35,8 @@ public class OrderController {
 
     @PostMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto placeOrder(@PathVariable Long userId) {
-        return orderService.placeOrder(userId);
+    public OrderDto placeOrder(@PathVariable Long userId, @RequestBody OrderRequest request) {
+        return orderService.placeOrder(userId, request);
     }
 
 

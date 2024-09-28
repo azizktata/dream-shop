@@ -37,7 +37,7 @@ public class ProductService implements IProductService{
         }
 
         Product product = create(request, category);
-        product.setProductStatus();
+        product.setNewProductStatus();
 
         return ProductDto.toDto(productRepository.save(product));
     }
@@ -71,7 +71,7 @@ public class ProductService implements IProductService{
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setInventory(request.getInventory());
-        product.setProductStatus();
+        product.setNewProductStatus();
         return product;
     }
 

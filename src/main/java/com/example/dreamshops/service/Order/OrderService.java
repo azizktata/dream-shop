@@ -1,16 +1,21 @@
 package com.example.dreamshops.service.Order;
 
 import com.example.dreamshops.dto.OrderDto;
+import com.example.dreamshops.dto.OrderItemDto;
 import com.example.dreamshops.enums.OrderStatus;
 import com.example.dreamshops.exceptions.EntityNotFoundException;
 import com.example.dreamshops.model.*;
 import com.example.dreamshops.repository.OrderItemRepo;
 import com.example.dreamshops.repository.OrderRepo;
 import com.example.dreamshops.repository.ProductRepo;
+import com.example.dreamshops.repository.UserRepo;
+import com.example.dreamshops.request.OrderItemRequest;
+import com.example.dreamshops.request.OrderRequest;
 import com.example.dreamshops.service.Cart.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,39 +25,40 @@ import java.util.Set;
 @AllArgsConstructor
 public class OrderService implements IOrderService{
     private final OrderRepo orderRepo;
-    private final CartService cartService;
+    private final UserRepo userRepo;
     private final OrderItemRepo orderItemRepo;
     private final ProductRepo productRepo;
 
     @Override
-    public OrderDto placeOrder(Long userId) {
-        Cart cart = cartService.getCartByUserId(userId);
+    public OrderDto placeOrder(Long userId, OrderRequest request) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id: " + userId + " not found"));
         Order order = new Order();
         order.setCreatedDate(LocalDate.now());
         order.setStatus(OrderStatus.PENDING);
-        order.setUser(cart.getUser());
+        order.setUser(user);
+        user.addOrder(order);
 
-        Set<CartItem> cartItems = cart.getCartItems();
+
         List<OrderItem> orderItems = new ArrayList<>();
-        cartItems.forEach(cartItem -> {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(cartItem.getProduct());
+        request.getOrderItems().stream().map(orderItemDto -> {
 
-            Product product = cartItem.getProduct();
-            product.setInventory(product.getInventory() - cartItem.getQuantity());
-            product.setProductStatus();
+            Product product = productRepo.findById(orderItemDto.getProductId()).orElseThrow(() -> new EntityNotFoundException("Product with id: " + orderItemDto.getProductId() + " not found"));
+            OrderItem orderItem = OrderItemRequest.toEntity(orderItemDto, product);
+            orderItems.add(orderItem);
+            orderItem.setOrder(order);
+
+
+            product.setInventory(product.getInventory() - orderItemDto.getQuantity());
+            product.setNewProductStatus();
             productRepo.save(product);
 
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getTotalPrice());
-            orderItem.setOrder(order);
-            orderItems.add(orderItem);
-        });
+            return orderItemRepo.save(orderItem);
+        }).toList();
 
         order.setOrderItems(orderItems);
         order.updateTotalAmount();
+        userRepo.save(user);
 
-        cartService.clearCart(cart.getId());
         return OrderDto.toDto(orderRepo.save(order));
     }
 

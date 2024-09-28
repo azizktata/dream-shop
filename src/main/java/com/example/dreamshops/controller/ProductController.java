@@ -56,7 +56,6 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto addProduct(@RequestBody ProductRequest product){
         return productService.addProduct(product);

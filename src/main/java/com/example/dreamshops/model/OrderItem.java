@@ -18,7 +18,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int quantity;
-    private BigDecimal price;
+    private BigDecimal unitPrice;
+    private BigDecimal totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -27,4 +28,9 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    public void setNewTotalPrice() {
+        this.totalPrice = this.unitPrice.multiply(BigDecimal.valueOf(this.quantity));
+    }
+
 }
